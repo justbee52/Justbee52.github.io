@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Just Bee - Pure Natural Honey</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .honey-gradient {
+            background: linear-gradient(135deg, #f9d423 0%, #ff4e50 100%);
+        }
+        .bee-pattern {
+            background-image: radial-gradient(circle, #000000 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .jar-shadow {
+            box-shadow: 0 10px 30px rgba(246, 190, 0, 0.3);
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+```
+    /* Enhanced header styling */
+    .sticky-header {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        width: 100%;
+    }
+    
+    .logo-text {
+        text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+        font-weight: 900;
+        letter-spacing: -1px;
+        color: #92400e;
+    }
+    
+    /* Add padding to body to account for fixed header */
+    body {
+        padding-top: 100px;
+    }
+</style>
+```
+
+</head>
+<body class="bg-amber-50 font-sans">
+    <!-- Enhanced Fixed Header -->
+    <header class="honey-gradient text-white sticky-header z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-bee text-5xl text-yellow-300 drop-shadow-lg"></i>
+                    <h1 class="text-6xl font-black logo-text drop-shadow-lg">Just Bee</h1>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#products" class="hover:text-yellow-200 transition text-lg font-bold">Products</a>
+                    <a href="#about" class="hover:text-yellow-200 transition text-lg font-bold">About</a>
+                    <a href="#contact" class="hover:text-yellow-200 transition text-lg font-bold">Contact</a>
+                </nav>
+                <button class="md:hidden text-3xl" id="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden bg-amber-600 px-4 py-2" id="mobile-menu">
+            <a href="#products" class="block py-2 hover:text-yellow-200 text-lg font-bold">Products</a>
+            <a href="#about" class="block py-2 hover:text-yellow-200 text-lg font-bold">About</a>
+            <a href="#contact" class="block py-2 hover:text-yellow-200 text-lg font-bold">Contact</a>
+        </div>
+    </header>
+
+```
+<!-- Hero Section -->
+<section class="relative overflow-hidden">
+    <div class="honey-gradient h-64 md:h-96 flex items-center justify-center">
+        <div class="text-center px-4 z-10">
+            <h2 class="text-4xl md:text-6xl font-bold text-white mb-4">Pure Natural Honey</h2>
+            <p class="text-xl md:text-2xl text-yellow-100 mb-8">Straight from the hive to your home</p>
+            <a href="#products" class="bg-white text-amber-800 font-bold px-8 py-3 rounded-full hover:bg-yellow-100 transition duration-300 inline-block">
+                Shop Now
+            </a>
+        </div>
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-10 left-1/4 text-6xl"><i class="fas fa-bee"></i></div>
+            <div class="absolute top-1/3 right-1/3 text-5xl"><i class="fas fa-bee"></i></div>
+            <div class="absolute bottom-20 left-1/3 text-7xl"><i class="fas fa-bee"></i></div>
+            <div class="absolute bottom-1/4 right-1/4 text-4xl"><i class="fas fa-bee"></i></div>
+        </div>
+    </div>
+    <div class="absolute bottom-0 left-0 right-0 h-16 bg-amber-50 transform skew-y-2 origin-bottom-left"></div>
+</section>
+
+<!-- Products Section -->
+<section id="products" class="py-16 bg-amber-50">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-center text-amber-900 mb-12">Our Golden Goodness</h2>
+        
+        <div class="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+            <!-- 1/2 lb Jar -->
+            <div class="bg-white rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition duration-300 jar-shadow">
+                <div class="h-64 bg-amber-100 flex items-center justify-center relative">
+                    <div class="honey-jar w-32 h-48 bg-gradient-to-b from-amber-200 to-amber-400 rounded-lg border-4 border-amber-600 relative overflow-hidden">
+                        <div class="absolute bottom-0 left-0 right-0 h-3/4 bg-amber-300 rounded-b-lg"></div>
+                        <div class="absolute top-4 left-1/2 transform -translate-x-1/2 text-xs font-bold text-amber-800">1/2 lb</div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-amber-900 mb-2">Just Bee Honey - 1/2 lb</h3>
+                    <p class="text-amber-700 mb-4">Pure, raw honey harvested with care from local beekeepers.</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-2xl font-bold text-amber-800">$12.99</span>
+                        <button onclick="orderViaText('1/2 lb Honey - $12.99')" class="bg-amber-600 text-white px-4 py-2 rounded-full hover:bg-amber-700 transition duration-300">
+                            Order via Text
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 1 lb Jar -->
+            <div class="bg-white rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition duration-300 jar-shadow">
+                <div class="h-64 bg-amber-100 flex items-center justify-center relative">
+                    <div class="honey-jar w-36 h-56 bg-gradient-to-b from-amber-200 to-amber-400 rounded-lg border-4 border-amber-600 relative overflow-hidden">
+                        <div class="absolute bottom-0 left-0 right-0 h-3/4 bg-amber-300 rounded-b-lg"></div>
+                        <div class="absolute top-4 left-1/2 transform -translate-x-1/2 text-xs font-bold text-amber-800">1 lb</div>
+                    </div>
+                    <div class="absolute top-4 right-4 bg-yellow-400 text-amber-900 font-bold px-3 py-1 rounded-full text-xs">
+                        BEST VALUE
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-amber-900 mb-2">Just Bee Honey - 1 lb</h3>
+                    <p class="text-amber-700 mb-4">Our premium honey in a larger size for true honey enthusiasts.</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-2xl font-bold text-amber-800">$18.99</span>
+                        <button onclick="orderViaText('1 lb Honey - $18.99')" class="bg-amber-600 text-white px-4 py-2 rounded-full hover:bg-amber-700 transition duration-300">
+                            Order via Text
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-16 text-center">
+            <button onclick="orderViaText('I want to browse all available honey products')" class="inline-block bg-black text-white px-8 py-4 rounded-full font-bold hover:bg-gray-800 transition duration-300 pulse-animation">
+                <i class="fas fa-shopping-cart mr-2"></i> Order via Text Message
+            </button>
+        </div>
+        
+        <!-- Square Payment Info -->
+        <div class="mt-12 bg-white rounded-xl p-6 shadow-lg max-w-2xl mx-auto">
+            <div class="text-center">
+                <h3 class="text-xl font-bold text-amber-900 mb-4">
+                    <i class="fas fa-credit-card mr-2"></i> Secure Payment Options
+                </h3>
+                <p class="text-amber-700 mb-4">We accept all major credit cards through Square for secure, fast checkout.</p>
+                <div class="flex justify-center space-x-4 text-3xl text-gray-600">
+                    <i class="fab fa-cc-visa"></i>
+                    <i class="fab fa-cc-mastercard"></i>
+                    <i class="fab fa-cc-amex"></i>
+                    <i class="fab fa-cc-discover"></i>
+                    <i class="fab fa-apple-pay"></i>
+                    <i class="fab fa-google-pay"></i>
+                </div>
+                <p class="text-sm text-amber-600 mt-4">Powered by Square - Your payment information is always secure</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Reminder Section -->
+<section class="py-16 bg-amber-100">
+    <div class="container mx-auto px-4 max-w-3xl">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="md:flex">
+                <div class="md:w-1/2 bg-amber-500 flex items-center justify-center p-8">
+                    <i class="fas fa-sms text-white text-8xl"></i>
+                </div>
+                <div class="md:w-1/2 p-8">
+                    <h3 class="text-2xl font-bold text-amber-900 mb-4">Get Reminders</h3>
+                    <p class="text-amber-700 mb-6">We'll text you when it's time to reorder your favorite honey!</p>
+                    <form id="reminder-form" class="space-y-4">
+                        <div>
+                            <label for="name" class="block text-amber-800 mb-1">Name</label>
+                            <input type="text" id="name" class="w-full px-4 py-2 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" required>
+                        </div>
+                        <div>
+                            <label for="customer-phone" class="block text-amber-800 mb-1">Your Phone Number</label>
+                            <input type="tel" id="customer-phone" class="w-full px-4 py-2 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Your phone number" required>
+                        </div>
+                        <div>
+                            <label for="frequency" class="block text-amber-800 mb-1">Reminder Frequency</label>
+                            <select id="frequency" class="w-full px-4 py-2 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="1">Every Month</option>
+                                <option value="2">Every 2 Months</option>
+                                <option value="3">Every 3 Months</option>
+                                <option value="6">Every 6 Months</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-amber-600 text-white py-3 rounded-lg font-bold hover:bg-amber-700 transition duration-300">
+                            Set Reminder
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="py-16 bg-white">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <h2 class="text-3xl md:text-4xl font-bold text-center text-amber-900 mb-12">About Just Bee</h2>
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+            <div>
+                <p class="text-amber-800 mb-4">At Just Bee, we operate from a single apiary location where every drop of our honey is carefully crafted by nature's finest workers. Our philosophy is simple: healthy bees make the best possible honey.</p>
+                <p class="text-amber-800 mb-4">We prioritize the health and wellbeing of our bees above all else, using sustainable and bee-friendly practices that allow our colonies to thrive naturally. This commitment to bee health results in exceptionally pure, flavorful honey that reflects the true essence of what nature intended.</p>
+                <p class="text-amber-800 mb-4">Our honey is raw and lightly filtered to preserve all the natural enzymes, antioxidants, and beneficial compounds while removing only the largest particles. We never add anything artificial – no preservatives, no additives, just pure honey exactly as our bees made it.</p>
+                <p class="text-amber-800">Every jar represents the dedication to quality that comes from focusing on one thing and doing it exceptionally well: producing the finest raw honey while keeping our bees happy and healthy.</p>
+            </div>
+            <div class="relative">
+                <img src="https://images.unsplash.com/photo-1587049352851-8d4e89133924?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Beekeeper with honey" class="rounded-lg shadow-lg w-full">
+                <div class="absolute -bottom-4 -right-4 bg-yellow-400 text-amber-900 font-bold px-4 py-2 rounded-lg shadow-md">
+                    <i class="fas fa-certificate mr-2"></i> 100% Raw & Pure
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-16 bg-amber-100">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <h2 class="text-3xl md:text-4xl font-bold text-center text-amber-900 mb-12">Get In Touch</h2>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-bold text-amber-800 mb-4">Contact Information</h3>
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-phone-alt text-amber-600 mt-1 mr-3"></i>
+                        <div>
+                            <p class="font-bold text-amber-800">Text or Call</p>
+                            <a href="sms:(716)353-0224" class="text-amber-700 hover:text-amber-900 transition text-lg font-semibold">(716) 353-0224</a>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-map-marker-alt text-amber-600 mt-1 mr-3"></i>
+                        <div>
+                            <p class="font-bold text-amber-800">Location</p>
+                            <p class="text-amber-700">Buffalo, NY</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <h4 class="text-lg font-bold text-amber-800 mb-4">Quick Text Options</h4>
+                    <div class="space-y-3">
+                        <button onclick="orderViaText('Hi! I want to place an order')" class="block w-full bg-green-500 text-white px-4 py-3 rounded-lg hover:bg-green-600 transition duration-300 text-center font-semibold">
+                            <i class="fas fa-shopping-cart mr-2"></i> Text to Order
+                        </button>
+                        <button onclick="sendQuickText('Hi! I have a question about your honey')" class="block w-full bg-blue-500 text-white px-4 py-3 rounded-lg hover:bg-blue-600 transition duration-300 text-center font-semibold">
+                            <i class="fas fa-question-circle mr-2"></i> Ask a Question
+                        </button>
+                        <button onclick="sendQuickText('Hi! I would like to set up delivery reminders')" class="block w-full bg-purple-500 text-white px-4 py-3 rounded-lg hover:bg-purple-600 transition duration-300 text-center font-semibold">
+                            <i class="fas fa-bell mr-2"></i> Setup Reminders
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-amber-800 mb-4">Send Us a Custom Message</h3>
+                <form id="contact-form" class="space-y-4">
+                    <div>
+                        <label for="contact-name" class="block text-amber-800 mb-1">Your Name</label>
+                        <input type="text" id="contact-name" class="w-full px-4 py-2 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" required>
+                    </div>
+                    <div>
+                        <label for="contact-message" class="block text-amber-800 mb-1">Message</label>
+                        <textarea id="contact-message" rows="4" class="w-full px-4 py-2 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Type your message here..." required></textarea>
+                    </div>
+                    <button type="submit" class="bg-amber-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-amber-700 transition duration-300 w-full">
+                        <i class="fas fa-paper-plane mr-2"></i> Send Text Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-amber-900 text-amber-100 py-8">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center mb-4 md:mb-0">
+                <i class="fas fa-bee text-2xl text-yellow-300 mr-2"></i>
+                <span class="text-xl font-bold">Just Bee</span>
+            </div>
+            <div class="flex space-x-6 mb-4 md:mb-0">
+                <a href="#" class="hover:text-yellow-300 transition"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="hover:text-yellow-300 transition"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="hover:text-yellow-300 transition"><i class="fab fa-twitter"></i></a>
+            </div>
+            <div class="text-sm">
+                &copy; 2023 Just Bee Honey. All rights reserved.
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Success Modal -->
+<div id="success-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white p-8 rounded-lg max-w-md mx-4">
+        <div class="text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-check text-green-500 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Message Sent!</h3>
+            <p class="text-gray-600 mb-6">Your text message has been prepared. We'll respond shortly!</p>
+            <button id="close-modal" class="bg-amber-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-amber-700 transition duration-300">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to send order via text
+    function orderViaText(product) {
+        const message = `Hi! I'd like to order: ${product}. Please send me a Square payment link. Thank you!`;
+        const smsLink = `sms:(716)353-0224?body=${encodeURIComponent(message)}`;
+        window.open(smsLink, '_blank');
+    }
+
+    // Function to send quick text messages
+    function sendQuickText(message) {
+        const smsLink = `sms:(716)353-0224?body=${encodeURIComponent(message)}`;
+        window.open(smsLink, '_blank');
+    }
+
+    // Mobile menu toggle
+    document.getElementById('menu-toggle').addEventListener('click', function() {
+        const menu = document.getElementById('mobile-menu');
+        menu.classList.toggle('hidden');
+    });
+
+    // Reminder form submission
+    document.getElementById('reminder-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('customer-phone').value;
+        const frequency = document.getElementById('frequency').value;
+        
+        // Create SMS link for reminder setup
+        const message = `Hi! I'm ${name}. Please set up honey delivery reminders for me every ${frequency} month(s). My phone: ${phone}`;
+        const smsLink = `sms:(716)353-0224?body=${encodeURIComponent(message)}`;
+        window.open(smsLink, '_blank');
+        
+        // Show success modal
+        document.getElementById('success-modal').classList.remove('hidden');
+        this.reset();
+    });
+
+    // Contact form submission
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('contact-name').value;
+        const message = document.getElementById('contact-message').value;
+        
+        // Create SMS link
+        const fullMessage = `Hi! This is ${name}. ${message}`;
+        const smsLink = `sms:(716)353-0224?body=${encodeURIComponent(fullMessage)}`;
+        window.open(smsLink, '_blank');
+        
+        // Show success modal
+        document.getElementById('success-modal').classList.remove('hidden');
+        this.reset();
+    });
+
+    // Close modal
+    document.getElementById('close-modal').addEventListener('click', function() {
+        document.getElementById('success-modal').classList.add('hidden');
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Close mobile menu when clicking on links
+    document.querySelectorAll('#mobile-menu a').forEach(link => {
+        link.addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.add('hidden');
+        });
+    });
+</script>
+```
+
+</body>
+</html>
