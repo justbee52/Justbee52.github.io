@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catastrophe - Multiplayer Territory Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+        color: #fff;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .lobby-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .lobby-container {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 40px;
+        backdrop-filter: blur(10px);
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+    }
+
+    .game-container {
+        display: flex;
+        flex: 1;
+        padding: 20px;
+        gap: 20px;
+    }
+
+    .board-section {
+        flex: 2.5;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 20px;
+        backdrop-filter: blur(10px);
+    }
+
+    .control-panel {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 20px;
+        backdrop-filter: blur(10px);
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .diplomacy-board {
+        position: relative;
+        width: 100%;
+        max-width: 700px;
+        margin: 0 auto;
+        background: #2c3e50;
+        border: 3px solid #34495e;
+        border-radius: 15px;
+        padding: 20px;
+    }
+
+    .board-path {
+        display: grid;
+        grid-template-areas: 
+            "corner1 top1 top2 top3 top4 top5 top6 top7 top8 corner2"
+            "left8 . . . . . . . . right1"
+            "left7 . . . . . . . . right2"
+            "left6 . . center center center . . . right3"
+            "left5 . . center center center . . . right4"
+            "left4 . . center center center . . . right5"
+            "left3 . . . . . . . . right6"
+            "left2 . . . . . . . . right7"
+            "left1 . . . . . . . . right8"
+            "corner4 bottom8 bottom7 bottom6 bottom5 bottom4 bottom3 bottom2 bottom1 corner3";
+        grid-template-columns: repeat(10, 1fr);
+        grid-template-rows: repeat(10, 1fr);
+        gap: 2px;
+        height: 600px;
+    }
+
+    .territory {
+        background: #34495e;
+        border: 2px solid #2c3e50;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        padding: 5px;
+    }
+
+    .territory:hover {
+        transform: scale(1.05);
+        border-color: #e74c3c;
+        z-index: 10;
+    }
+
+    .corner {
+        font-size: 12px;
+        font-weight: bold;
+        background: #c0392b;
+    }
+
+    .territory.owned {
+        border-width: 3px;
+    }
+
+    .territory.player0 { border-color: #e74c3c; background-color: rgba(231, 76, 60, 0.3); }
+    .territory.player1 { border-color: #2ecc71; background-color: rgba(46, 204, 113, 0.3); }
+    .territory.player2 { border-color: #f39c12; background-color: rgba(243, 156, 18, 0.3); }
+    .territory.player3 { border-color: #9b59b6; background-color: rgba(155, 89, 182, 0.3); }
+    .territory.player4 { border-color: #3498db; background-color: rgba(52, 152, 219, 0.3); }
+    .territory.player5 { border-color: #e67e22; background-color: rgba(230, 126, 34, 0.3); }
+
+    .resource-wood { background-color: rgba(139, 69, 19, 0.7); }
+    .resource-brick { background-color: rgba(205, 133, 63, 0.7); }
+    .resource-sheep { background-color: rgba(144, 238, 144, 0.7); }
+    .resource-wheat { background-color: rgba(240, 230, 140, 0.7); }
+    .resource-ore { background-color: rgba(112, 128, 144, 0.7); }
+
+    .player-piece {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+    }
+
+    .player-piece.player0 { background: #e74c3c; }
+    .player-piece.player1 { background: #2ecc71; }
+    .player-piece.player2 { background: #f39c12; }
+    .player-piece.player3 { background: #9b59b6; }
+    .player-piece.player4 { background: #3498db; }
+    .player-piece.player5 { background: #e67e22; }
+
+    .center-area {
+        grid-area: center;
+        background: rgba(192, 57, 43, 0.5);
+        border: 2px solid #c0392b;
+        border-radius: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .action-wheel {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: conic-gradient(
+            #e74c3c 0deg 90deg,
+            #2ecc71 90deg 180deg,
+            #3498db 180deg 270deg,
+            #f39c12 270deg 360deg
+        );
+        margin: 10px auto;
+        position: relative;
+        cursor: pointer;
+        transition: transform 2s ease-out;
+    }
+
+    .wheel-pointer {
+        position: absolute;
+        top: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 16px solid #fff;
+    }
+
+    .wheel-center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 30px;
+        height: 30px;
+        background: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #000;
+        font-weight: bold;
+        font-size: 8px;
+    }
+
+    .dice-section, .player-info, .resources, .actions, .players-list {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .dice {
+        display: inline-block;
+        width: 35px;
+        height: 35px;
+        background: #fff;
+        color: #000;
+        border-radius: 6px;
+        line-height: 35px;
+        margin: 0 3px;
+        font-weight: bold;
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .resource-item {
+        display: flex;
+        justify-content: space-between;
+        margin: 3px 0;
+        font-size: 12px;
+    }
+
+    .btn {
+        background: #e74c3c;
+        color: #fff;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin: 3px;
+        font-size: 12px;
+        transition: background 0.3s ease;
+        width: 100%;
+    }
+
+    .btn:hover {
+        background: #c0392b;
+    }
+
+    .btn:disabled {
+        background: #7f8c8d;
+        cursor: not-allowed;
+    }
+
+    .btn.secondary {
+        background: #3498db;
+    }
+
+    .btn.secondary:hover {
+        background: #2980b9;
+    }
+
+    .game-log {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        padding: 10px;
+        height: 150px;
+        overflow-y: auto;
+        font-size: 11px;
+    }
+
+    .log-entry {
+        margin: 2px 0;
+    }
+
+    .title {
+        text-align: center;
+        margin-bottom: 15px;
+        font-size: 36px;
+        font-weight: bold;
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+        color: #e74c3c;
+    }
+
+    .territory-name {
+        font-weight: bold;
+        margin-bottom: 2px;
+    }
+
+    .territory-info {
+        font-size: 8px;
+        opacity: 0.8;
+    }
+
+    .settlement-marker {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        background: #fff;
+        color: #000;
+        border-radius: 50%;
+        width: 15px;
+        height: 15px;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .player-list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 5px 0;
+        padding: 5px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .player-color-indicator {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+    }
+
+    .input-group {
+        margin: 20px 0;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .input-group input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .room-code {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+        font-size: 18px;
+        font-weight: bold;
+        letter-spacing: 2px;
+    }
+
+    .current-turn-indicator {
+        background: rgba(231, 76, 60, 0.3);
+        border: 2px solid #e74c3c;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+</style>
+```
+
+</head>
+<body>
+    <!-- Lobby Screen -->
+    <div id="lobbyScreen" class="lobby-screen">
+        <div class="lobby-container">
+            <div class="title">CATASTROPHE</div>
+            <p style="margin-bottom: 30px; font-size: 18px; opacity: 0.9;">
+                A strategic territory conquest game combining elements of Monopoly, Catan, and Raccoon Tycoon
+            </p>
+
+```
+        <div class="input-group">
+            <input type="text" id="playerNameInput" placeholder="Enter your name" maxlength="20">
+        </div>
+        
+        <button class="btn" id="createGameBtn" style="width: 48%; margin-right: 4%;">Create Game</button>
+        <button class="btn secondary" id="joinGameBtn" style="width: 48%;">Join Game</button>
+        
+        <div id="joinGameSection" class="hidden" style="margin-top: 30px;">
+            <div class="input-group">
+                <input type="text" id="roomCodeInput" placeholder="Enter room code" maxlength="6" style="text-transform: uppercase;">
+            </div>
+            <button class="btn" id="joinRoomBtn">Join Game</button>
+        </div>
+        
+        <div id="waitingRoom" class="hidden" style="margin-top: 30px;">
+            <h3>Waiting Room</h3>
+            <div class="room-code">Room Code: <span id="displayRoomCode"></span></div>
+            <div class="players-list">
+                <h4>Players:</h4>
+                <div id="playersList"></div>
+            </div>
+            <button class="btn" id="startGameBtn">Start Game (Need 2+ players)</button>
+            <button class="btn secondary" id="leaveGameBtn">Leave Game</button>
+        </div>
+    </div>
+</div>
+
+<!-- Game Screen -->
+<div id="gameScreen" class="hidden">
+    <div class="title">CATASTROPHE</div>
+    
+    <div class="game-container">
+        <div class="board-section">
+            <div class="diplomacy-board">
+                <div class="board-path" id="boardPath">
+                    <!-- Board will be generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="players-list">
+                <h4>Players</h4>
+                <div id="gamePlayersList"></div>
+            </div>
+            
+            <div class="player-info">
+                <h4>Your Turn: <span id="currentPlayerName">-</span></h4>
+                <div>Money: $<span id="playerMoney">1500</span></div>
+                <div>Victory Points: <span id="victoryPoints">0</span></div>
+                <div>Position: <span id="playerPosition">Start</span></div>
+            </div>
+            
+            <div class="dice-section">
+                <h4>Movement</h4>
+                <button class="btn" onclick="rollAndMove()" id="rollBtn">Roll & Move</button>
+                <div style="text-align: center; margin-top: 10px;">
+                    <span class="dice" id="dice1">-</span>
+                    <span class="dice" id="dice2">-</span>
+                </div>
+                <div style="text-align: center;">Total: <span id="diceTotal">0</span></div>
+            </div>
+            
+            <div class="resources">
+                <h4>Resources</h4>
+                <div class="resource-item"><span>Wood:</span> <span id="wood">0</span></div>
+                <div class="resource-item"><span>Brick:</span> <span id="brick">0</span></div>
+                <div class="resource-item"><span>Sheep:</span> <span id="sheep">0</span></div>
+                <div class="resource-item"><span>Wheat:</span> <span id="wheat">0</span></div>
+                <div class="resource-item"><span>Ore:</span> <span id="ore">0</span></div>
+            </div>
+            
+            <div class="actions">
+                <h4>Actions</h4>
+                <div class="action-wheel" onclick="spinWheel()" id="actionWheel">
+                    <div class="wheel-pointer"></div>
+                    <div class="wheel-center">SPIN</div>
+                </div>
+                <div id="wheelResult" style="text-align: center; font-size: 12px;">Spin after moving!</div>
+                
+                <button class="btn" onclick="buyTerritory()" id="buyBtn" disabled>Buy Territory</button>
+                <button class="btn" onclick="buildSettlement()" id="buildBtn" disabled>Build Settlement</button>
+                <button class="btn" onclick="collectTribute()" id="tributeBtn" disabled>Collect Tribute</button>
+                <button class="btn" onclick="endTurn()" id="endTurnBtn" disabled>End Turn</button>
+            </div>
+            
+            <div class="game-log">
+                <h4>Game Log</h4>
+                <div id="gameLog"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Game state
+    let gameState = {
+        roomCode: '',
+        players: [],
+        currentPlayerIndex: 0,
+        myPlayerIndex: -1,
+        territoryOwners: [],
+        territorySettlements: [],
+        turnPhase: 'move',
+        lastWheelResult: '',
+        gameStarted: false
+    };
+
+    // European territories in order around the board
+    const territories = [
+        { name: "START", type: "corner", price: 0, resource: null },
+        { name: "Norway", type: "territory", price: 60, resource: "wood" },
+        { name: "Sweden", type: "territory", price: 60, resource: "wood" },
+        { name: "Baltic Sea", type: "special", price: 0, resource: null },
+        { name: "Finland", type: "territory", price: 80, resource: "ore" },
+        { name: "Russia", type: "territory", price: 100, resource: "wheat" },
+        { name: "Poland", type: "territory", price: 120, resource: "brick" },
+        { name: "Prussia", type: "territory", price: 140, resource: "ore" },
+        { name: "Denmark", type: "territory", price: 160, resource: "sheep" },
+        { name: "CATASTROPHE", type: "corner", price: 0, resource: null },
+        { name: "Holland", type: "territory", price: 180, resource: "wheat" },
+        { name: "Belgium", type: "territory", price: 180, resource: "brick" },
+        { name: "Ruhr", type: "territory", price: 200, resource: "ore" },
+        { name: "Munich", type: "territory", price: 220, resource: "sheep" },
+        { name: "Bohemia", type: "territory", price: 220, resource: "wood" },
+        { name: "Vienna", type: "territory", price: 240, resource: "wheat" },
+        { name: "Budapest", type: "territory", price: 260, resource: "brick" },
+        { name: "Galicia", type: "territory", price: 280, resource: "sheep" },
+        { name: "ALLIANCE", type: "corner", price: 0, resource: null },
+        { name: "Rumania", type: "territory", price: 300, resource: "wheat" },
+        { name: "Bulgaria", type: "territory", price: 300, resource: "ore" },
+        { name: "Serbia", type: "territory", price: 320, resource: "wood" },
+        { name: "Albania", type: "territory", price: 350, resource: "sheep" },
+        { name: "Greece", type: "territory", price: 350, resource: "brick" },
+        { name: "Turkey", type: "territory", price: 400, resource: "ore" },
+        { name: "Black Sea", type: "special", price: 0, resource: null },
+        { name: "Ukraine", type: "territory", price: 400, resource: "wheat" },
+        { name: "EMBARGO", type: "corner", price: 0, resource: null },
+        { name: "Moscow", type: "territory", price: 350, resource: "ore" },
+        { name: "Warsaw", type: "territory", price: 320, resource: "brick" },
+        { name: "Silesia", type: "territory", price: 300, resource: "wood" },
+        { name: "Berlin", type: "territory", price: 280, resource: "sheep" },
+        { name: "Kiel", type: "territory", price: 260, resource: "wheat" },
+        { name: "Liverpool", type: "territory", price: 240, resource: "sheep" },
+        { name: "Edinburgh", type: "territory", price: 220, resource: "wood" },
+        { name: "London", type: "territory", price: 200, resource: "brick" }
+    ];
+
+    const gridPositions = [
+        'corner1', 'top1', 'top2', 'top3', 'top4', 'top5', 'top6', 'top7', 'top8', 'corner2',
+        'right1', 'right2', 'right3', 'right4', 'right5', 'right6', 'right7', 'right8', 'corner3',
+        'bottom1', 'bottom2', 'bottom3', 'bottom4', 'bottom5', 'bottom6', 'bottom7', 'bottom8', 'corner4',
+        'left1', 'left2', 'left3', 'left4', 'left5', 'left6', 'left7', 'left8'
+    ];
+
+    const playerColors = ['#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#3498db', '#e67e22'];
+
+    // Multiplayer functions
+    function createGame() {
+        console.log('createGame function called');
+        const playerName = document.getElementById('playerNameInput').value.trim();
+        console.log('Player name:', playerName);
+        
+        if (!playerName) {
+            alert('Please enter your name');
+            return;
+        }
+
+        // Generate room code
+        gameState.roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        console.log('Generated room code:', gameState.roomCode);
+        
+        // Initialize first player
+        gameState.players = [{
+            name: playerName,
+            money: 1500,
+            resources: {wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0},
+            victoryPoints: 0,
+            position: 0,
+            isHost: true
+        }];
+        
+        gameState.myPlayerIndex = 0;
+        gameState.territoryOwners = new Array(territories.length).fill(null);
+        gameState.territorySettlements = new Array(territories.length).fill(false);
+
+        console.log('Game state initialized, showing waiting room');
+        showWaitingRoom();
+    }
+
+    function showJoinGame() {
+        console.log('showJoinGame called');
+        const joinSection = document.getElementById('joinGameSection');
+        if (joinSection.classList.contains('hidden')) {
+            joinSection.classList.remove('hidden');
+            console.log('Join section shown');
+        } else {
+            joinSection.classList.add('hidden');
+            console.log('Join section hidden');
+        }
+    }
+
+    function joinGame() {
+        console.log('joinGame function called');
+        const playerName = document.getElementById('playerNameInput').value.trim();
+        const roomCode = document.getElementById('roomCodeInput').value.trim().toUpperCase();
+        
+        console.log('Player name:', playerName, 'Room code:', roomCode);
+        
+        if (!playerName || !roomCode) {
+            alert('Please enter your name and room code');
+            return;
+        }
+
+        // For demo purposes - since this is a single-page demo, we'll simulate multiplayer
+        // Create a dummy game if none exists
+        if (gameState.roomCode === '' || gameState.players.length === 0) {
+            // Create a dummy host player for demo
+            gameState.roomCode = roomCode;
+            gameState.players = [{
+                name: 'Host Player',
+                money: 1500,
+                resources: {wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0},
+                victoryPoints: 0,
+                position: 0,
+                isHost: true
+            }];
+        }
+
+        if (roomCode === gameState.roomCode || roomCode.length === 6) {
+            const newPlayer = {
+                name: playerName,
+                money: 1500,
+                resources: {wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0},
+                victoryPoints: 0,
+                position: 0,
+                isHost: false
+            };
+            
+            gameState.players.push(newPlayer);
+            gameState.myPlayerIndex = gameState.players.length - 1;
+            gameState.roomCode = roomCode;
+            
+            console.log('Player joined successfully');
+            showWaitingRoom();
+            updatePlayersList();
+        } else {
+            alert('Room not found or invalid room code');
+        }
+    }
+
+    function showWaitingRoom() {
+        console.log('showWaitingRoom called');
+        // Hide main lobby content but keep the lobby screen visible
+        const lobbyElements = document.querySelectorAll('.lobby-container > p, .lobby-container > .input-group, .lobby-container > .btn');
+        lobbyElements.forEach(el => el.style.display = 'none');
+        document.getElementById('joinGameSection').style.display = 'none';
+        
+        // Show waiting room
+        document.getElementById('waitingRoom').classList.remove('hidden');
+        document.getElementById('displayRoomCode').textContent = gameState.roomCode;
+        updatePlayersList();
+        console.log('Waiting room displayed');
+    }
+
+    function updatePlayersList() {
+        const playersList = document.getElementById('playersList');
+        playersList.innerHTML = '';
+        
+        gameState.players.forEach((player, index) => {
+            const playerDiv = document.createElement('div');
+            playerDiv.className = 'player-list-item';
+            playerDiv.innerHTML = `
+                <span>${player.name} ${player.isHost ? '(Host)' : ''}</span>
+                <div class="player-color-indicator" style="background: ${playerColors[index]};"></div>
+            `;
+            playersList.appendChild(playerDiv);
+        });
+
+        // Update start button
+        const startBtn = document.getElementById('startGameBtn');
+        const canStart = gameState.players.length >= 2 && gameState.players[gameState.myPlayerIndex].isHost;
+        startBtn.disabled = !canStart;
+        startBtn.textContent = gameState.players.length < 2 ? 'Need 2+ players' : 'Start Game';
+    }
+
+    function startGame() {
+        if (gameState.players.length < 2) return;
+        
+        gameState.gameStarted = true;
+        document.getElementById('lobbyScreen').classList.add('hidden');
+        document.getElementById('gameScreen').classList.remove('hidden');
+        
+        initializeBoard();
+        addToLog('🎯 CATASTROPHE has begun! Navigate Europe, buy territories, and dominate!');
+        addToLog(`🎮 ${gameState.players.length} players entered the game.`);
+        updateDisplay();
+    }
+
+    function leaveGame() {
+        // Reset game state
+        gameState = {
+            roomCode: '',
+            players: [],
+            currentPlayerIndex: 0,
+            myPlayerIndex: -1,
+            territoryOwners: [],
+            territorySettlements: [],
+            turnPhase: 'move',
+            lastWheelResult: '',
+            gameStarted: false
+        };
+        
+        // Show lobby
+        document.getElementById('gameScreen').classList.add('hidden');
+        document.getElementById('waitingRoom').classList.add('hidden');
+        document.getElementById('joinGameSection').classList.add('hidden');
+        document.getElementById('lobbyScreen').style.display = 'flex';
+        
+        // Clear inputs
+        document.getElementById('playerNameInput').value = '';
+        document.getElementById('roomCodeInput').value = '';
+    }
+
+    // Game functions
+    function initializeBoard() {
+        const boardPath = document.getElementById('boardPath');
+        boardPath.innerHTML = '';
+
+        // Create center area
+        const centerDiv = document.createElement('div');
+        centerDiv.className = 'center-area';
+        centerDiv.innerHTML = `
+            <div style="font-weight: bold; margin-bottom: 10px;">⚡ CATASTROPHE ⚡</div>
+            <div style="font-size: 10px; text-align: center;">Conquer Europe<br>or Face Ruin</div>
+        `;
+        centerDiv.style.gridArea = 'center';
+        boardPath.appendChild(centerDiv);
+
+        // Create territories
+        territories.forEach((territory, index) => {
+            const territoryDiv = document.createElement('div');
+            territoryDiv.className = `territory ${territory.type === 'corner' ? 'corner' : ''} ${territory.resource ? 'resource-' + territory.resource : ''}`;
+            territoryDiv.style.gridArea = gridPositions[index];
+            territoryDiv.id = `territory-${index}`;
+
+            if (territory.type === 'corner') {
+                territoryDiv.innerHTML = `<div class="territory-name">${territory.name}</div>`;
+            } else {
+                territoryDiv.innerHTML = `
+                    <div class="territory-name">${territory.name}</div>
+                    <div class="territory-info">$${territory.price}</div>
+                    <div class="territory-info">${territory.resource || ''}</div>
+                `;
+            }
+
+            boardPath.appendChild(territoryDiv);
+        });
+
+        updatePlayerPositions();
+        updateGamePlayersList();
+    }
+
+    function updatePlayerPositions() {
+        document.querySelectorAll('.player-piece').forEach(piece => piece.remove());
+
+        gameState.players.forEach((player, index) => {
+            const territoryElement = document.getElementById(`territory-${player.position}`);
+            const playerPiece = document.createElement('div');
+            playerPiece.className = `player-piece player${index}`;
+            
+            const playersHere = gameState.players.filter(p => p.position === player.position).length;
+            const playerIndex = gameState.players.filter((p, i) => p.position === player.position && i <= index).length - 1;
+            
+            if (playersHere > 1) {
+                playerPiece.style.left = `${40 + playerIndex * 20}%`;
+            }
+            
+            territoryElement.appendChild(playerPiece);
+        });
+    }
+
+    function updateGamePlayersList() {
+        const gamePlayersList = document.getElementById('gamePlayersList');
+        gamePlayersList.innerHTML = '';
+        
+        gameState.players.forEach((player, index) => {
+            const playerDiv = document.createElement('div');
+            playerDiv.className = `player-list-item ${index === gameState.currentPlayerIndex ? 'current-turn-indicator' : ''}`;
+            playerDiv.innerHTML = `
+                <div>
+                    <div style="font-weight: bold;">${player.name}</div>
+                    <div style="font-size: 10px;">$${player.money} | VP: ${player.victoryPoints}</div>
+                </div>
+                <div class="player-color-indicator" style="background: ${playerColors[index]};"></div>
+            `;
+            gamePlayersList.appendChild(playerDiv);
+        });
+    }
+
+    function rollAndMove() {
+        if (gameState.currentPlayerIndex !== gameState.myPlayerIndex || gameState.turnPhase !== 'move') return;
+
+        const dice1 = Math.floor(Math.random() * 6) + 1;
+        const dice2 = Math.floor(Math.random() * 6) + 1;
+        const total = dice1 + dice2;
+
+        document.getElementById('dice1').textContent = dice1;
+        document.getElementById('dice2').textContent = dice2;
+        document.getElementById('diceTotal').textContent = total;
+
+        const currentPlayer = getCurrentPlayer();
+        const oldPosition = currentPlayer.position;
+        currentPlayer.position = (currentPlayer.position + total) % territories.length;
+
+        // Check if passed START
+        if (currentPlayer.position < oldPosition) {
+            currentPlayer.money += 200;
+            addToLog(`${currentPlayer.name} passed START and collected $200!`);
+        }
+
+        const territory = territories[currentPlayer.position];
+        addToLog(`${currentPlayer.name} rolled ${dice1}+${dice2}=${total} and landed on ${territory.name}`);
+
+        updatePlayerPositions();
+        handleLanding();
+    }
+
+    function handleLanding() {
+        const currentPlayer = getCurrentPlayer();
+        const territory = territories[currentPlayer.position];
+
+        switch (territory.type) {
+            case 'corner':
+                handleCornerSpace(territory.name);
+                break;
+            case 'territory':
+                handleTerritoryLanding();
+                break;
+            case 'special':
+                handleSpecialSpace();
+                break;
+        }
+
+        gameState.turnPhase = 'action';
+        updateDisplay();
+        updateButtons();
+    }
+
+    function handleCornerSpace(cornerName) {
+        const currentPlayer = getCurrentPlayer();
+        
+        switch (cornerName) {
+            case 'START':
+                addToLog(`${currentPlayer.name} is at START`);
+                break;
+            case 'CATASTROPHE':
+                // Collect resources from all owned territories
+                let collected = false;
+                gameState.territoryOwners.forEach((owner, index) => {
+                    if (owner === gameState.currentPlayerIndex && territories[index].resource) {
+                        currentPlayer.resources[territories[index].resource]++;
+                        collected = true;
+                    }
+                });
+                if (collected) {
+                    addToLog(`${currentPlayer.name} survived the catastrophe and collected resources!`);
+                }
+                break;
+            case 'ALLIANCE':
+                addToLog(`${currentPlayer.name} formed an alliance and gets a free action!`);
+                break;
+            case 'EMBARGO':
+                // Steal resources from other players
+                addToLog(`${currentPlayer.name} declared an embargo!`);
+                stealResources();
+                break;
+        }
+    }
+
+    function handleTerritoryLanding() {
+        const territory = territories[getCurrentPlayer().position];
+        const owner = gameState.territoryOwners[getCurrentPlayer().position];
+
+        if (owner === null) {
+            addToLog(`${territory.name} is available for purchase!`);
+        } else if (owner !== gameState.currentPlayerIndex) {
+            // Pay rent
+            const rent = Math.floor(territory.price * 0.1);
+            const currentPlayer = getCurrentPlayer();
+            const ownerPlayer = gameState.players[owner];
+
+            if (currentPlayer.money >= rent) {
+                currentPlayer.money -= rent;
+                ownerPlayer.money += rent;
+                addToLog(`${currentPlayer.name} paid $${rent} rent to ${ownerPlayer.name}`);
+            } else {
+                addToLog(`${currentPlayer.name} cannot afford rent!`);
+            }
+        } else {
+            addToLog(`${currentPlayer.name} owns this territory`);
+        }
+    }
+
+    function handleSpecialSpace() {
+        addToLog(`${getCurrentPlayer().name} landed on a special space`);
+    }
+
+    function spinWheel() {
+        if (gameState.currentPlayerIndex !== gameState.myPlayerIndex || gameState.turnPhase !== 'action') return;
+
+        const wheel = document.getElementById('actionWheel');
+        const randomRotation = Math.floor(Math.random() * 360) + 360 * 3;
+        wheel.style.transform = `rotate(${randomRotation}deg)`;
+
+        setTimeout(() => {
+            const finalRotation = randomRotation % 360;
+            let action;
+
+            if (finalRotation < 90) {
+                action = 'Build';
+                gameState.lastWheelResult = 'build';
+            } else if (finalRotation < 180) {
+                action = 'Trade';
+                gameState.lastWheelResult = 'trade';
+            } else if (finalRotation < 270) {
+                action = 'Buy';
+                gameState.lastWheelResult = 'buy';
+            } else {
+                action = 'Steal';
+                gameState.lastWheelResult = 'steal';
+            }
+
+            document.getElementById('wheelResult').textContent = `Action: ${action}`;
+            addToLog(`${getCurrentPlayer().name} spun: ${action}`);
+
+            gameState.turnPhase = 'build';
+            updateButtons();
+        }, 2000);
+    }
+
+    function buyTerritory() {
+        if (gameState.currentPlayerIndex !== gameState.myPlayerIndex || gameState.turnPhase !== 'build' || gameState.lastWheelResult !== 'buy') return;
+
+        const currentPlayer = getCurrentPlayer();
+        const position = currentPlayer.position;
+        const territory = territories[position];
+
+        if (territory.type !== 'territory') {
+            addToLog("Cannot buy this space!");
+            return;
+        }
+
+        if (gameState.territoryOwners[position] !== null) {
+            addToLog("Territory already owned!");
+            return;
+        }
+
+        if (currentPlayer.money < territory.price) {
+            addToLog("Not enough money!");
+            return;
+        }
+
+        currentPlayer.money -= territory.price;
+        gameState.territoryOwners[position] = gameState.currentPlayerIndex;
+        currentPlayer.victoryPoints += 1;
+
+        const territoryElement = document.getElementById(`territory-${position}`);
+        territoryElement.classList.add('owned', `player${gameState.currentPlayerIndex}`);
+
+        addToLog(`${currentPlayer.name} bought ${territory.name} for $${territory.price}`);
+        updateDisplay();
+    }
+
+    function buildSettlement() {
+        if (gameState.currentPlayerIndex !== gameState.myPlayerIndex || gameState.turnPhase !== 'build' || gameState.lastWheelResult !== 'build') return;
+
+        const currentPlayer = getCurrentPlayer();
+        const position = currentPlayer.position;
+
+        if (gameState.territoryOwners[position] !== gameState.currentPlayerIndex) {
+            addToLog("You must own this territory!");
+            return;
+        }
+
+        if (gameState.territorySettlements[position]) {
+            addToLog("Settlement already exists here!");
+            return;
+        }
+
+        if (currentPlayer.resources.wood < 1 || currentPlayer.resources.brick < 1 || 
+            currentPlayer.resources.sheep < 1 || currentPlayer.resources.wheat < 1) {
+            addToLog("Need 1 Wood, 1 Brick, 1 Sheep, 1 Wheat!");
+            return;
+        }
+
+        currentPlayer.resources.wood--;
+        currentPlayer.resources.brick--;
+        currentPlayer.resources.sheep--;
+        currentPlayer.resources.wheat--;
+
+        gameState.territorySettlements[position] = true;
+        currentPlayer.victoryPoints += 2;
+
+        const territoryElement = document.getElementById(`territory-${position}`);
+        const settlement = document.createElement('div');
+        settlement.className = 'settlement-marker';
+        settlement.textContent = '🏰';
+        territoryElement.appendChild(settlement);
+
+        addToLog(`${currentPlayer.name} built a settlement!`);
+        updateDisplay();
+    }
+
+    function collectTribute() {
+        if (gameState.currentPlayerIndex !== gameState.myPlayerIndex || gameState.turnPhase !== 'build' || gameState.lastWheelResult !== 'steal') return;
+
+        const currentPlayer = getCurrentPlayer();
+        
+        // Collect from all territories owned
+        let collected = false;
+        gameState.territoryOwners.forEach((owner, index) => {
+            if (owner === gameState.currentPlayerIndex && territories[index].resource) {
+                currentPlayer.resources[territories[index].resource]++;
+                collected = true;
+            }
+        });
+
+        if (collected) {
+            addToLog(`${currentPlayer.name} collected tribute from territories!`);
+            updateDisplay();
+        }
+    }
+
+    function stealResources() {
+        const currentPlayer = getCurrentPlayer();
+        gameState.players.forEach((player, index) => {
+            if (index !== gameState.currentPlayerIndex) {
+                const resourceTypes = Object.keys(player.resources);
+                resourceTypes.forEach(resource => {
+                    if (player.resources[resource] > 0) {
+                        player.resources[resource]--;
+                        currentPlayer.resources[resource]++;
+                    }
+                });
+            }
+        });
+        updateDisplay();
+    }
+
+    function endTurn() {
+        if (gameState.currentPlayerIndex !== gameState.myPlayerIndex) return;
+
+        gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+        gameState.turnPhase = 'move';
+        gameState.lastWheelResult = '';
+
+        updateDisplay();
+        updateButtons();
+        updateGamePlayersList();
+
+        // Check win condition
+        const currentPlayer = getCurrentPlayer();
+        if (currentPlayer.victoryPoints >= 15) {
+            addToLog(`🎉 ${currentPlayer.name} wins with ${currentPlayer.victoryPoints} victory points!`);
+            alert(`${currentPlayer.name} wins CATASTROPHE!`);
+        }
+    }
+
+    function getCurrentPlayer() {
+        return gameState.players[gameState.currentPlayerIndex];
+    }
+
+    function getMyPlayer() {
+        return gameState.players[gameState.myPlayerIndex];
+    }
+
+    function updateDisplay() {
+        const myPlayer = getMyPlayer();
+        const currentPlayer = getCurrentPlayer();
+        
+        document.getElementById('currentPlayerName').textContent = currentPlayer.name;
+        document.getElementById('playerMoney').textContent = myPlayer.money;
+        document.getElementById('victoryPoints').textContent = myPlayer.victoryPoints;
+        document.getElementById('playerPosition').textContent = territories[myPlayer.position].name;
+
+        document.getElementById('wood').textContent = myPlayer.resources.wood;
+        document.getElementById('brick').textContent = myPlayer.resources.brick;
+        document.getElementById('sheep').textContent = myPlayer.resources.sheep;
+        document.getElementById('wheat').textContent = myPlayer.resources.wheat;
+        document.getElementById('ore').textContent = myPlayer.resources.ore;
+    }
+
+    function updateButtons() {
+        const isMyTurn = gameState.currentPlayerIndex === gameState.myPlayerIndex;
+        
+        document.getElementById('rollBtn').disabled = !isMyTurn || gameState.turnPhase !== 'move';
+        document.getElementById('buyBtn').disabled = !isMyTurn || !(gameState.turnPhase === 'build' && gameState.lastWheelResult === 'buy');
+        document.getElementById('buildBtn').disabled = !isMyTurn || !(gameState.turnPhase === 'build' && gameState.lastWheelResult === 'build');
+        document.getElementById('tributeBtn').disabled = !isMyTurn || !(gameState.turnPhase === 'build' && gameState.lastWheelResult === 'steal');
+        document.getElementById('endTurnBtn').disabled = !isMyTurn || gameState.turnPhase === 'move';
+    }
+
+    function addToLog(message) {
+        const log = document.getElementById('gameLog');
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.textContent = message;
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+    }
+
+    // Initialize the lobby when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Page loaded, setting up event listeners...');
+        
+        // Set up all button event listeners
+        document.getElementById('createGameBtn').addEventListener('click', createGame);
+        document.getElementById('joinGameBtn').addEventListener('click', showJoinGame);
+        document.getElementById('joinRoomBtn').addEventListener('click', joinGame);
+        document.getElementById('startGameBtn').addEventListener('click', startGame);
+        document.getElementById('leaveGameBtn').addEventListener('click', leaveGame);
+        
+        // Set up enter key listeners
+        document.getElementById('playerNameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                console.log('Enter pressed on name input');
+                createGame();
+            }
+        });
+
+        document.getElementById('roomCodeInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                console.log('Enter pressed on room code input');
+                joinGame();
+            }
+        });
+        
+        console.log('Event listeners set up successfully');
+    });
+```
